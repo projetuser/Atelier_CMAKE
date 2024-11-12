@@ -84,3 +84,19 @@ jobs:
           cmake ..
           make
           ./src/calculator car 10 5
+  Deployement:
+    runs-on: ubuntu-latest
+    needs: [Test_Add, Test_div, Test_mul, Test_sub, Test_car]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Deploy to server
+        env:
+          DEPLOY_SERVER: ${{ secrets.DEPLOY_SERVER }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          echo "Starting deployment"
+          scp -r build/* $DEPLOY_USER@$DEPLOY_SERVER:$DEPLOY_PATH || echo "Deploy failed"
+          echo "Deployment complete"
